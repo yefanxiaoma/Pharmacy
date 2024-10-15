@@ -15,6 +15,7 @@
         <template slot="title">{{ '你好，' + user.userno }}</template>
         <el-menu-item @click.native="gocenter"><i class="el-icon-user"></i>个人中心</el-menu-item>
         <el-menu-item @click.native="goshoppingcart"><i class="el-icon-shopping-cart-2"></i>购物车</el-menu-item>
+        <el-menu-item @click.native=""><i class="el-icon-star-off"></i>我的收藏</el-menu-item>
         <el-menu-item @click.native="toOrder"><i class="el-icon-tickets"></i>订单管理</el-menu-item>
         <el-menu-item @click.native="logout"><i class="el-icon-delete"></i>退出登录</el-menu-item>
       </el-submenu>

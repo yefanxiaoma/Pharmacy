@@ -26,6 +26,7 @@
           <div class="location">所在地区：{{ item.province }} {{ item.city }} {{ item.district }}</div>
           <div class="detail">详细地址：{{ item.detail }}</div>
           <div class="phone">联系手机：{{ item.mobile }}</div>
+          <el-button type="text" @click="selectedAddress" :disabled="ifShow">修改地址</el-button>
         </div>
       </div>
     </div>
@@ -120,6 +121,63 @@
       <el-button type="primary" @click="confirmed">确 定</el-button>
     </span>
     </el-dialog>
+    <el-dialog
+        title="选择收货地址"
+        :visible.sync="AddDialogVisible"
+        width="850px"
+        center>
+      <el-table
+          :data="address"
+          style="width: 100%">
+        <el-table-column
+            prop="username"
+            label="姓名"
+            width="120">
+        </el-table-column>
+        <el-table-column
+            prop="mobile"
+            label="手机号码"
+            width="150">
+        </el-table-column>
+        <el-table-column
+            prop="province"
+            label="省份"
+            width="120">
+        </el-table-column>
+        <el-table-column
+            prop="city"
+            label="城市"
+            width="120">
+        </el-table-column>
+        <el-table-column
+            prop="district"
+            label="区/县"
+            width="120">
+        </el-table-column>
+        <el-table-column label="操作" width="120">
+          <template #default="scope">
+            <el-button
+                @click="selectAddress(scope.row.id)"
+                type="primary"
+                size="small">选择</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="AddDialogVisible = false">取 消</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+        title="你确定要修改地址吗？"
+        :visible.sync="Visible"
+        width="400px"
+        center>
+      您还可以修改的次数为:{{this.number}}
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="Visible = false">取 消</el-button>
+        <el-button @click="changeAddress" type="primary">确定</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -132,14 +190,20 @@ export default {
   data(){
     return{
       form:{},
+      numberData:[],
       tableData:[],
       addressTableData:[],
+      address:[],
       orderId:'',
       status:'',
+      number:0,
       useraddressId:'',
       AlltotalPrice:0,
+      AddDialogVisible:false,
       centerDialogVisible: false,
       DialogVisible:false,
+      Visible:false,
+      AddressSelected:null,
       selectedPayment: '', // 记录选择的支付方式
       paymentOptions: [
         { name: '支付宝', imageUrl: require('@/image/支付宝支付.png') },
@@ -148,12 +212,30 @@ export default {
     }
   },
   mounted() {
-    this.orderId = this.$route.query.orderId;
-    this.status = this.$route.query.status;
+    this.user = JSON.parse(sessionStorage.getItem('CurUser'));
     this.loadPost()
     this.AddressloadPost()
+    this.loadPostNumber()
+  },
+    computed: {
+      ifShow() {
+        // 计算属性，根据状态和 number 返回布尔值
+        return this.status === '待收货' || this.status === '待评价';
+      }
   },
   methods:{
+    loadPostNumber(){
+      this.$axios.post(this.$HttpUrl+"/orders/listnumber",{ orderId: this.orderId }).then(res=>res.data)
+          .then(res=>{
+            /* 如果有数据就存到tableData*/
+            if(res.code === 200){
+              this.numberData = res.data;
+              this.number = this.numberData[0].number
+            }
+          }).catch(error=>{
+        console.error('数据获取失败',error)
+      })
+    },
     loadPost(){
       this.$axios.post(this.$HttpUrl+"/orderItems/list",{orderId:this.orderId}).then(res=>res.data).then(res=>{
         if(res.code === 200){
@@ -204,8 +286,44 @@ export default {
       }).catch(error=> {
         this.$message.error('收货失败')
       })
+    },
+    selectedAddress(){
+      if(this.number>0) {
+        this.$axios.post(this.$HttpUrl + "/userAddress/list", {id: this.user.id}).then(res => res.data)
+            .then(res => {
+              /* 如果有数据就存到tableData*/
+              if (res.code === 200) {
+                this.address = res.data;
+                this.AddDialogVisible = true
+              }
+            }).catch(error => {
+          console.error('数据获取失败', error)
+        })
+      }else {
+        this.$message.error('您已经无修改地址次数')
+      }
+    },
+    selectAddress(addressId) {
+      this.Visible = true;
+      this.AddressSelected = addressId
+    },
+    changeAddress(){
+      this.number = this.number-1;
+      this.$axios.post(this.$HttpUrl+"/orders/changeAddress",{orderId:this.orderId,useraddressId:this.AddressSelected,number:this.number})
+          .then(res=>res.data).then(res=>{
+           this.$message.success('修改地址成功')
+           this.Visible = false
+           this.AddDialogVisible = false
+           window.location.reload()
+      }).catch(error=>{
+        this.$message.error('修改失败')
+      })
     }
   },
+  created() {
+    this.orderId = this.$route.query.orderId;
+    this.status = this.$route.query.status;
+  }
 }
 </script>
 

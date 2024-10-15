@@ -5,8 +5,12 @@
     </el-header>
     <el-main style="padding: 0">
       <ReturnHome></ReturnHome>
-  <div style="display: flex;flex-direction: column;align-items: center;justify-content: center;margin-top: 10px">
-    <el-steps :active="number" align-center style="width: 500px;">
+      <div style="display:flex;align-items: center;justify-content: center;">
+        <div style="width: 200px;">
+      <Aside></Aside>
+        </div>
+  <div style="display: flex;flex-direction: column;align-items: center;justify-content: center">
+    <el-steps :active="number" align-center style="width: 500px;margin-top: 20px">
       <el-step title="选择产品"></el-step>
       <el-step title="填写核对订单信息"></el-step>
       <el-step title="完成订单"></el-step>
@@ -68,7 +72,7 @@
           已选商品数量: <span style="color: red;font-weight: bold">{{ selectedCount }} </span>件
           总价:<span style="margin-left: 10px;color: red">￥{{ totalAmount }}</span>
         </div>
-        <el-button type="primary" style="margin-left: auto;width: 150px" @click="selectedAddress">选择收获地址</el-button>
+        <el-button type="primary" style="margin-left: auto;width: 150px" @click="selectedAddress">选择收货地址</el-button>
         <el-button type="success" style="width: 150px" @click="checkout">结算</el-button>
       </div>
     </div>
@@ -140,9 +144,9 @@
         </el-table>
         <span slot="footer" class="dialog-footer">
         <el-button @click="DialogVisible = false">取 消</el-button>
-        <el-button type="primary" >确 定</el-button>
       </span>
       </el-dialog>
+      </div>
     </el-main>
 
   </el-container>
@@ -151,10 +155,11 @@
 <script>
 import Header from "@/components/Header.vue";
 import ReturnHome from "@/components/ReturnHome.vue";
+import Aside from "@/components/Aside.vue";
 
 export default {
   name:"ShoppingCart",
-  components: {ReturnHome, Header},
+  components: {Aside, ReturnHome, Header},
   data(){
     return{
       number:1,
@@ -252,7 +257,8 @@ export default {
             userId: this.user.id,
             status: '待付款',
             totalPrice: this.totalAmount,
-            useraddressId: this.AddressSelected.id
+            useraddressId: this.AddressSelected.id,
+            number:2
           }).then(res => res.data).then(res => {
             if (res.code === 200) {
               this.orderId = res.data;
@@ -314,7 +320,6 @@ export default {
     },
     selectAddress(address) {
       this.AddressSelected = address; // 保存选中的地址
-      console.log(this.AddressSelected)
       this.DialogVisible = false; // 关闭对话框
     },
   },

@@ -28,8 +28,8 @@
             <div class="itemss">主要作用: {{ item.power }}</div>
             <div class="itemPrice">价格: ￥{{ item.price }}</div>
 
-            <el-input-number v-model="num" @change="handleChange" :min="1" :max="200"  class="item-quantity"></el-input-number>
-
+            <el-input-number v-model="num" @change="handleChange" :min="1" :max="200"  class="item-quantity" style="width: 200px"></el-input-number>
+            <el-button type="warning" style="margin-left: 20px;width: 200px">收藏</el-button>
             <div class="button-container">
               <el-button type="danger" style="width: 200px;" @click="dialogBuy">立即购买</el-button>
               <el-button type="primary" style="width: 200px;" @click="addToCart(item)">加入购物车</el-button>
@@ -140,7 +140,8 @@ export default {
           userId: this.user.id,
           status: '待付款',
           totalPrice: this.totalPrice,
-          useraddressId: this.address.id
+          useraddressId: this.address.id,
+          number:2
         }).then(res => res.data).then(res => {
           if (res.code === 200) {
             this.orderId = res.data;

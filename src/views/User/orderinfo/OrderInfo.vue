@@ -8,15 +8,19 @@
   <div>
     <div class="sidebar">
       <div>
-      <el-button style="color: white" type="text" @click="goToOrderInfo">全部订单</el-button>
+        <el-button style="color: white" type="text" @click="goToOrderInfo"><h2>全部订单</h2></el-button>
       <el-button style="color: white" type="text" @click="fetchOrders('待付款')">待付款(<span style="color: red">{{pendingPaymentCount}}</span>)</el-button>
       <el-button style="color: white" type="text" @click="fetchOrders('待发货')">待发货(<span style="color: red">{{pendingShipmentCount}}</span>)</el-button>
       <el-button style="color: white" type="text" @click="fetchOrders('待收货')">待收货(<span style="color: red">{{pendingReceiptCount}}</span>)</el-button>
       <el-button style="color: white" type="text" @click="fetchOrders('待评价')">待评价(<span style="color: red">{{pendingReviewCount}}</span>)</el-button>
     </div>
     </div>
+
     <div style="display: flex;align-items: center;justify-content: center">
-    <div>
+      <div style="height: 500px;width: 200px">
+      <Aside></Aside>
+      </div>
+    <div style="width: 1000px">
       <el-table
           ref="multipleTable"
           :data="tableData"
@@ -24,13 +28,13 @@
           style="width: 100%">
         <el-table-column
             label="下单人"
-            width="200">
+            width="100">
             {{ this.user.name || this.user.userno }}
         </el-table-column>
         <el-table-column
             prop="status"
             label="订单状态"
-            width="200">
+            width="100">
         </el-table-column>
         <el-table-column
             prop="orderDate"
@@ -43,7 +47,8 @@
         width="200px">
         </el-table-column>
         <el-table-column
-            label="查看订单详情">
+            label="查看订单详情"
+        width="200px">
           <template #default="scope">
             <el-button type="text" @click="viewOrderDetails(scope.row)">订单详情</el-button>
           </template>
@@ -63,9 +68,10 @@
  import Header from "@/components/Header.vue";
  import ReturnHome from "@/components/ReturnHome.vue";
  import Footer from "@/components/Footer.vue"
+ import Aside from "@/components/Aside.vue";
  export default {
    name:"OrderInfo",
-   components: {ReturnHome, Header,Footer},
+   components: {Aside, ReturnHome, Header,Footer},
    data(){
      return{
        tableData:[],
@@ -148,7 +154,7 @@
              path: '/orders/orderdetail',
              query: {
                orderId: order.orderId,
-               status:order.status
+               status:order.status,
              },
            });
      },

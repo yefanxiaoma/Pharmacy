@@ -38,6 +38,12 @@ const routes = [
     meta:{requiresAuth:true},
   },
   {
+    path: '/user/userAddress',
+    name: 'userAddress',
+    component: ()=>import('@/views/User/usercenter/UserAddress.vue'),
+    meta:{requiresAuth:true},
+  },
+  {
     path: '/drugdetail/:id',
     name: 'DrugDetail',
     props: true,
